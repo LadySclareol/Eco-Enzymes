@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco Enzyme Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2d7d3d;
+            --primary-light: #4a9f5a;
+            --primary-lighter: #6db97d;
+            --accent: #8dd79f;
+            --neutral-light: #f0f5f2;
+            --neutral-text: #2c3e35;
+            --border: #d1e5d9;
+            --success: #52b788;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f0f5f2 0%, #e8f1ec 100%);
+            color: var(--neutral-text);
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(45, 125, 61, 0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 2rem 1.5rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2rem 1.5rem;
+        }
+
+        .lang-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+        }
+
+        .lang-btn {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid var(--border);
+            background: white;
+            color: var(--primary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(45, 125, 61, 0.3);
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--primary-light);
+            box-shadow: 0 4px 12px rgba(45, 125, 61, 0.4);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(45, 125, 61, 0.3);
+        }
+
+        .slider-value {
+            min-width: 60px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 0.9rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            color: var(--neutral-text);
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(45, 125, 61, 0.02);
+            box-shadow: 0 0 0 3px rgba(45, 125, 61, 0.1);
+        }
+
+        .results {
+            background: linear-gradient(135deg, rgba(45, 125, 61, 0.05) 0%, rgba(141, 215, 159, 0.05) 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 2px solid var(--border);
+        }
+
+        .results-title {
+            color: var(--primary);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            text-align: center;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .result-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+
+        .result-unit {
+            font-size: 0.85rem;
+            color: #999;
+            margin-left: 0.3rem;
+        }
+
+        .info-box {
+            background: #f0f8f5;
+            border-left: 4px solid var(--success);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--neutral-text);
+        }
+
+        .info-box strong {
+            color: var(--primary);
+        }
+
+        .ratio-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.8rem;
+        }
+
+        @media (max-width: 480px) {
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .result-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .result-value {
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="title">🌿 Eco Enzyme Calculator</h1>
+            <p id="subtitle">Perfect fermentation ratios for your batch</p>
+        </div>
+
+        <div class="content">
+            <div class="lang-toggle">
+                <label for="langSelect" style="margin: 0; color: var(--primary); font-weight: 600; margin-right: 0.5rem;">Language:</label>
+                <select id="langSelect" style="padding: 0.6rem 1rem; border: 2px solid var(--border); background: white; color: var(--primary); border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="de">Deutsch</option>
+                    <option value="pt">Português</option>
+                    <option value="it">Italiano</option>
+                    <option value="nl">Nederlands</option>
+                    <option value="ru">Русский</option>
+                    <option value="ja">日本語</option>
+                    <option value="zh">中文</option>
+                    <option value="ko">한국어</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="ar">العربية</option>
+                    <option value="th">ไทย</option>
+                    <option value="vi">Tiếng Việt</option>
+                    <option value="id">Bahasa Indonesia</option>
+                    <option value="tr">Türkçe</option>
+                    <option value="pl">Polski</option>
+                    <option value="sv">Svenska</option>
+                    <option value="cs">Čeština</option>
+                </select>
+            </div>
+
+            <form id="form">
+                <div class="form-group">
+                    <label for="headspace" id="headspaceLabel">Headspace for Gas Buildup</label>
+                    <div class="slider-container">
+                        <input type="range" id="headspace" min="0" max="100" value="60" step="5">
+                        <span class="slider-value" id="headspaceValue">60%</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="containerSize" id="containerLabel">Container Size</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="number" id="containerSize" placeholder="Enter size" min="1" value="25" step="0.1" style="flex: 1;">
+                        <span style="align-self: center; color: var(--primary); font-weight: 600;">Liters</span>
+                    </div>
+                </div>
+            </form>
+
+            <div class="results">
+                <div class="results-title" id="resultsTitle">📊 Your Eco Enzyme Recipe</div>
+
+                <div class="result-item">
+                    <div>
+                        <div class="result-label" id="label-water">💧 Water</div>
+                    </div>
+                    <div>
+                        <span class="result-value" id="value-water">0.0</span>
+                        <span class="result-unit">Liters</span>
+                    </div>
+                </div>
+
+                <div class="result-item">
+                    <div>
+                        <div class="result-label" id="label-waste">🥬 Organic Waste</div>
+                    </div>
+                    <div>
+                        <span class="result-value" id="value-waste">0.0</span>
+                        <span class="result-unit">kg</span>
+                    </div>
+                </div>
+
+                <div class="result-item">
+                    <div>
+                        <div class="result-label" id="label-molasses">🍯 Molasses (GMT)</div>
+                    </div>
+                    <div>
+                        <span class="result-value" id="value-molasses">0.0</span>
+                        <span class="result-unit">kg</span>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 1rem;">
+                    <span class="ratio-badge" id="ratioBadge">Ratio 1:3:10</span>
+                </div>
+
+                <div class="info-box" id="infoBox">
+                    <strong id="infoTitle">💡 Tip:</strong>
+                    <span id="infoText">Leave at least 20% headspace at the top for fermentation gases. Burp the container daily during the first month.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            en: {
+                title: "🌿 Eco Enzyme Calculator",
+                subtitle: "Perfect fermentation ratios for your batch",
+                headspaceLabel: "Headspace for Gas Buildup",
+                containerLabel: "Container Size",
+                resultsTitle: "📊 Your Eco Enzyme Recipe",
+                labelWater: "💧 Water",
+                labelWaste: "🥬 Organic Waste",
+                labelMolasses: "🍯 Molasses (GMT)",
+                ratioBadge: "Ratio 1:3:10",
+                infoTitle: "💡 Tip:",
+                infoText: "Leave at least 20% headspace at the top for fermentation gases. Burp the container daily during the first month."
+            },
+            es: {
+                title: "🌿 Calculadora de Eco Enzimas",
+                subtitle: "Proporciones de fermentación perfectas para tu lote",
+                headspaceLabel: "Espacio para Acumulación de Gas",
+                containerLabel: "Tamaño del Contenedor",
+                resultsTitle: "📊 Tu Receta de Eco Enzima",
+                labelWater: "💧 Agua",
+                labelWaste: "🥬 Residuos Orgánicos",
+                labelMolasses: "🍯 Melaza (GMT)",
+                ratioBadge: "Proporción 1:3:10",
+                infoTitle: "💡 Consejo:",
+                infoText: "Deja al menos 20% de espacio en la parte superior para los gases de fermentación. Abre el contenedor diariamente durante el primer mes."
+            },
+            fr: {
+                title: "🌿 Calculatrice d'Eco Enzymes",
+                subtitle: "Proportions de fermentation parfaites pour votre lot",
+                headspaceLabel: "Espace pour l'Accumulation de Gaz",
+                containerLabel: "Taille du Conteneur",
+                resultsTitle: "📊 Votre Recette d'Eco Enzymes",
+                labelWater: "💧 Eau",
+                labelWaste: "🥬 Déchets Organiques",
+                labelMolasses: "🍯 Mélasse (GMT)",
+                ratioBadge: "Ratio 1:3:10",
+                infoTitle: "💡 Conseil:",
+                infoText: "Laissez au moins 20% d'espace en haut pour les gaz de fermentation. Ouvrez le conteneur quotidiennement pendant le premier mois."
+            },
+            de: {
+                title: "🌿 Öko-Enzym-Rechner",
+                subtitle: "Perfekte Gärungsverhältnisse für Ihren Ansatz",
+                headspaceLabel: "Kopfraum für Gasbildung",
+                containerLabel: "Behältergröße",
+                resultsTitle: "📊 Ihr Öko-Enzym-Rezept",
+                labelWater: "💧 Wasser",
+                labelWaste: "🥬 Organische Abfälle",
+                labelMolasses: "🍯 Melasse (GMT)",
+                ratioBadge: "Verhältnis 1:3:10",
+                infoTitle: "💡 Tipp:",
+                infoText: "Lassen Sie mindestens 20% Kopfraum oben für Gärgase. Öffnen Sie den Behälter täglich im ersten Monat."
+            },
+            pt: {
+                title: "🌿 Calculadora de Eco Enzimas",
+                subtitle: "Proporções de fermentação perfeitas para seu lote",
+                headspaceLabel: "Espaço para Acúmulo de Gás",
+                containerLabel: "Tamanho do Recipiente",
+                resultsTitle: "📊 Sua Receita de Eco Enzima",
+                labelWater: "💧 Água",
+                labelWaste: "🥬 Resíduos Orgânicos",
+                labelMolasses: "🍯 Melaço (GMT)",
+                ratioBadge: "Proporção 1:3:10",
+                infoTitle: "💡 Dica:",
+                infoText: "Deixe pelo menos 20% de espaço no topo para gases de fermentação. Abra o recipiente diariamente durante o primeiro mês."
+            },
+            it: {
+                title: "🌿 Calcolatore Eco Enzimi",
+                subtitle: "Proporzioni di fermentazione perfette per il tuo lotto",
+                headspaceLabel: "Spazio per l'Accumulo di Gas",
+                containerLabel: "Dimensione del Contenitore",
+                resultsTitle: "📊 La Tua Ricetta di Eco Enzimi",
+                labelWater: "💧 Acqua",
+                labelWaste: "🥬 Rifiuti Organici",
+                labelMolasses: "🍯 Melassa (GMT)",
+                ratioBadge: "Rapporto 1:3:10",
+                infoTitle: "💡 Consiglio:",
+                infoText: "Lascia almeno il 20% di spazio in alto per i gas di fermentazione. Apri il contenitore quotidianamente durante il primo mese."
+            },
+            nl: {
+                title: "🌿 Eco-Enzym Calculator",
+                subtitle: "Perfecte gistingsverhoudingen voor uw batch",
+                headspaceLabel: "Kopperuimte voor Gasopbouw",
+                containerLabel: "Containergrootte",
+                resultsTitle: "📊 Uw Eco-Enzym Recept",
+                labelWater: "💧 Water",
+                labelWaste: "🥬 Organisch Afval",
+                labelMolasses: "🍯 Melasse (GMT)",
+                ratioBadge: "Verhouding 1:3:10",
+                infoTitle: "💡 Tip:",
+                infoText: "Laat minstens 20% kopperuimte bovenaan voor gistingsgassen. Open de container dagelijks gedurende de eerste maand."
+            },
+            ru: {
+                title: "🌿 Калькулятор Эко Ферментов",
+                subtitle: "Идеальные пропорции ферментации для вашей партии",
+                headspaceLabel: "Пространство для накопления газа",
+                containerLabel: "Размер контейнера",
+                resultsTitle: "📊 Ваш рецепт эко фермента",
+                labelWater: "💧 Вода",
+                labelWaste: "🥬 Органические отходы",
+                labelMolasses: "🍯 Патока (GMT)",
+                ratioBadge: "Соотношение 1:3:10",
+                infoTitle: "💡 Совет:",
+                infoText: "Оставьте не менее 20% пространства в верхней части для газов ферментации. Открывайте контейнер ежедневно в течение первого месяца."
+            },
+            ja: {
+                title: "🌿 エコ酵素計算機",
+                subtitle: "バッチの完璧な発酵比率",
+                headspaceLabel: "ガス蓄積用の空きスペース",
+                containerLabel: "容器サイズ",
+                resultsTitle: "📊 エコ酵素レシピ",
+                labelWater: "💧 水",
+                labelWaste: "🥬 有機廃棄物",
+                labelMolasses: "🍯 モラセス（GMT）",
+                ratioBadge: "比率 1:3:10",
+                infoTitle: "💡 ヒント:",
+                infoText: "発酵ガス用に上部に少なくとも20%のスペースを残してください。最初の1ヶ月間は毎日容器を開いてください。"
+            },
+            zh: {
+                title: "🌿 生态酶计算器",
+                subtitle: "完美的发酵比例",
+                headspaceLabel: "气体积累空间",
+                containerLabel: "容器大小",
+                resultsTitle: "📊 您的生态酶配方",
+                labelWater: "💧 水",
+                labelWaste: "🥬 有机废物",
+                labelMolasses: "🍯 糖蜜（GMT）",
+                ratioBadge: "比例 1:3:10",
+                infoTitle: "💡 提示:",
+                infoText: "在顶部留下至少20%的空间以供发酵气体使用。在第一个月内每天打开容器。"
+            },
+            ko: {
+                title: "🌿 에코 효소 계산기",
+                subtitle: "배치에 완벽한 발효 비율",
+                headspaceLabel: "가스 축적 공간",
+                containerLabel: "용기 크기",
+                resultsTitle: "📊 에코 효소 레시피",
+                labelWater: "💧 물",
+                labelWaste: "🥬 유기물 폐기물",
+                labelMolasses: "🍯 당밀 (GMT)",
+                ratioBadge: "비율 1:3:10",
+                infoTitle: "💡 팁:",
+                infoText: "발효 가스를 위해 상단에 최소 20% 이상의 공간을 남기세요. 첫 달 동안 매일 용기를 엽니다."
+            },
+            hi: {
+                title: "🌿 ईको एंजाइम कैलकुलेटर",
+                subtitle: "आपकी बैच के लिए परफेक्ट किण्वन अनुपात",
+                headspaceLabel: "गैस संचय के लिए हेडस्पेस",
+                containerLabel: "कंटेनर का आकार",
+                resultsTitle: "📊 आपकी ईको एंजाइम रेसिपी",
+                labelWater: "💧 पानी",
+                labelWaste: "🥬 जैविक अपशिष्ट",
+                labelMolasses: "🍯 गुड़ (GMT)",
+                ratioBadge: "अनुपात 1:3:10",
+                infoTitle: "💡 सुझाव:",
+                infoText: "किण्वन गैसों के लिए शीर्ष पर कम से कम 20% जगह छोड़ें। पहले महीने के दौरान दैनिक रूप से कंटेनर को खोलें।"
+            },
+            ar: {
+                title: "🌿 حاسبة الإنزيم البيئي",
+                subtitle: "نسب التخمير المثالية لدفعتك",
+                headspaceLabel: "مساحة تراكم الغاز",
+                containerLabel: "حجم الحاوية",
+                resultsTitle: "📊 وصفة الإنزيم البيئي",
+                labelWater: "💧 ماء",
+                labelWaste: "🥬 النفايات العضوية",
+                labelMolasses: "🍯 دبس السكر (GMT)",
+                ratioBadge: "النسبة 1:3:10",
+                infoTitle: "💡 نصيحة:",
+                infoText: "اترك مسافة 20% على الأقل في الأعلى لغازات التخمير. افتح الحاوية يومياً خلال الشهر الأول."
+            },
+            th: {
+                title: "🌿 เครื่องคำนวณเอนไซม์ยั่งยืน",
+                subtitle: "อัตราส่วนการหมักที่สมบูรณ์แบบสำหรับแบตช์ของคุณ",
+                headspaceLabel: "พื้นที่สำหรับการสะสมของแก๊ส",
+                containerLabel: "ขนาดของภาชนะ",
+                resultsTitle: "📊 สูตรเอนไซม์ยั่งยืนของคุณ",
+                labelWater: "💧 น้ำ",
+                labelWaste: "🥬 ขยะอินทรีย์",
+                labelMolasses: "🍯 โมลัสเซส (GMT)",
+                ratioBadge: "อัตราส่วน 1:3:10",
+                infoTitle: "💡 เคล็ดลับ:",
+                infoText: "ปล่อยพื้นที่อย่างน้อย 20% ที่ด้านบนสำหรับแก๊สการหมัก เปิดภาชนะทุกวันในเดือนแรก"
+            },
+            vi: {
+                title: "🌿 Máy Tính Enzyme Sinh Thái",
+                subtitle: "Tỷ lệ lên men hoàn hảo cho lô hàng của bạn",
+                headspaceLabel: "Không gian cho sự tích tụ khí",
+                containerLabel: "Kích thước Bình chứa",
+                resultsTitle: "📊 Công Thức Enzyme Sinh Thái của Bạn",
+                labelWater: "💧 Nước",
+                labelWaste: "🥬 Chất Thải Hữu Cơ",
+                labelMolasses: "🍯 Rỉ Mía (GMT)",
+                ratioBadge: "Tỷ lệ 1:3:10",
+                infoTitle: "💡 Mẹo:",
+                infoText: "Để lại ít nhất 20% không gian ở trên cùng cho khí lên men. Mở bình chứa hàng ngày trong tháng đầu tiên."
+            },
+            id: {
+                title: "🌿 Kalkulator Eco Enzyme",
+                subtitle: "Rasio fermentasi sempurna untuk batch Anda",
+                headspaceLabel: "Ruang Udara untuk Penumpukan Gas",
+                containerLabel: "Ukuran Kontainer",
+                resultsTitle: "📊 Resep Eco Enzyme Anda",
+                labelWater: "💧 Air",
+                labelWaste: "🥬 Limbah Organik",
+                labelMolasses: "🍯 Molasses (GMT)",
+                ratioBadge: "Rasio 1:3:10",
+                infoTitle: "💡 Tips:",
+                infoText: "Tinggalkan setidaknya 20% ruang headspace di bagian atas untuk gas fermentasi. Buka kontainer setiap hari selama bulan pertama."
+            },
+            tr: {
+                title: "🌿 Eko Enzim Hesaplayıcı",
+                subtitle: "Partiniz için mükemmel fermentasyon oranları",
+                headspaceLabel: "Gaz Birikimi için Başlık Alanı",
+                containerLabel: "Konteyner Boyutu",
+                resultsTitle: "📊 Eko Enzim Reçetesi",
+                labelWater: "💧 Su",
+                labelWaste: "🥬 Organik Atık",
+                labelMolasses: "🍯 Melases (GMT)",
+                ratioBadge: "Oran 1:3:10",
+                infoTitle: "💡 İpucu:",
+                infoText: "Fermentasyon gazları için üstte en az %20 boşluk bırakın. İlk ay boyunca konteyner günlük açın."
+            },
+            pl: {
+                title: "🌿 Kalkulator Eko Enzymów",
+                subtitle: "Idealne proporcje fermentacji do Twojej partii",
+                headspaceLabel: "Przestrzeń na gromadzenie się gazów",
+                containerLabel: "Rozmiar Pojemnika",
+                resultsTitle: "📊 Twój Przepis na Eko Enzymy",
+                labelWater: "💧 Woda",
+                labelWaste: "🥬 Odpady Organiczne",
+                labelMolasses: "🍯 Melasa (GMT)",
+                ratioBadge: "Stosunek 1:3:10",
+                infoTitle: "💡 Porada:",
+                infoText: "Zostaw co najmniej 20% przestrzeni na górze dla gazów fermentacyjnych. Otwieraj pojemnik codziennie przez pierwszy miesiąc."
+            },
+            sv: {
+                title: "🌿 Eco Enzym-kalkylator",
+                subtitle: "Perfekta jäsningsförhållanden för din batch",
+                headspaceLabel: "Headspace för Gasackumulation",
+                containerLabel: "Behållarstorlek",
+                resultsTitle: "📊 Ditt Eco Enzym-recept",
+                labelWater: "💧 Vatten",
+                labelWaste: "🥬 Organiska Avfall",
+                labelMolasses: "🍯 Melass (GMT)",
+                ratioBadge: "Förhållande 1:3:10",
+                infoTitle: "💡 Tips:",
+                infoText: "Lämna minst 20% utrymme längst upp för jäsningsgaser. Öppna behållaren dagligen under den första månaden."
+            },
+            cs: {
+                title: "🌿 Kalkulátor Eko Enzymů",
+                subtitle: "Dokonalé poměry fermentace pro vaši dávku",
+                headspaceLabel: "Prostor pro Hromadění Plynu",
+                containerLabel: "Velikost Nádoby",
+                resultsTitle: "📊 Váš Recept na Eko Enzymy",
+                labelWater: "💧 Voda",
+                labelWaste: "🥬 Organický Odpad",
+                labelMolasses: "🍯 Melasa (GMT)",
+                ratioBadge: "Poměr 1:3:10",
+                infoTitle: "💡 Tip:",
+                infoText: "Nechte alespoň 20% prostoru v horní části pro fermentační plyny. Otvírejte nádobu denně během prvního měsíce."
+            }
+        };
+
+        let currentLang = 'en';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+
+            document.getElementById('title').textContent = t.title;
+            document.getElementById('subtitle').textContent = t.subtitle;
+            document.getElementById('headspaceLabel').textContent = t.headspaceLabel;
+            document.getElementById('containerLabel').textContent = t.containerLabel;
+            document.getElementById('resultsTitle').textContent = t.resultsTitle;
+            document.getElementById('label-water').textContent = t.labelWater;
+            document.getElementById('label-waste').textContent = t.labelWaste;
+            document.getElementById('label-molasses').textContent = t.labelMolasses;
+            document.getElementById('ratioBadge').textContent = t.ratioBadge;
+            document.getElementById('infoTitle').textContent = t.infoTitle;
+            document.getElementById('infoText').textContent = t.infoText;
+
+            document.getElementById('langSelect').value = lang;
+            calculate();
+        }
+
+        function calculate() {
+            const headspace = parseFloat(document.getElementById('headspace').value);
+            const containerSize = parseFloat(document.getElementById('containerSize').value);
+
+            // Formula: Water fills to headspace percentage
+            const water = (containerSize * headspace) / 100;
+
+            // 1:3:10 ratio (Molasses : Organic Waste : Water)
+            // If water = 10 parts, then molasses = 1 part, waste = 3 parts
+            const molasses = water / 10;
+            const waste = water / 10 * 3;
+
+            // Update display
+            document.getElementById('value-water').textContent = water.toFixed(2);
+            document.getElementById('value-waste').textContent = waste.toFixed(2);
+            document.getElementById('value-molasses').textContent = molasses.toFixed(2);
+        }
+
+        // Event listeners
+        document.getElementById('headspace').addEventListener('input', (e) => {
+            document.getElementById('headspaceValue').textContent = e.target.value + '%';
+            calculate();
+        });
+
+        document.getElementById('containerSize').addEventListener('input', calculate);
+
+        document.getElementById('langSelect').addEventListener('change', (e) => {
+            setLanguage(e.target.value);
+        });
+
+        // Initial calculation
+        calculate();
+    </script>
+</body>
+</html>
